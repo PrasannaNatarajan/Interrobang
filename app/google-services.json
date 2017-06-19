@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "68296666299",
+    "firebase_url": "https://wifipoc-c7ddf.firebaseio.com",
+    "project_id": "wifipoc-c7ddf",
+    "storage_bucket": "wifipoc-c7ddf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68296666299:android:53b7617311f2ccd9",
+        "android_client_info": {
+          "package_name": "com.example.p_natarajan.wifipoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68296666299-3p8vddn8efgc8ipa6s485co3kii71el8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.p_natarajan.wifipoc",
+            "certificate_hash": "1cb31b2f1b48821cc8a52b6531f0c2470ac15a37"
+          }
+        },
+        {
+          "client_id": "68296666299-2ntp9k9qhp2l9sl5akr22jp0n5bf2ukm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWOmZuwF0HYTcMR-e3DpPsaI0YMIJHzso"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68296666299-2ntp9k9qhp2l9sl5akr22jp0n5bf2ukm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
