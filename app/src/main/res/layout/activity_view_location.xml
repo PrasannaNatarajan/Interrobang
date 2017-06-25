@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.p_natarajan.wifipoc.ViewLocation">
+    tools:context="com.example.p_natarajan.wifipoc.LandingPage">
 
-</android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="1080px"
+        android:layout_height="1920px"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/grid2"
+        android:layout_margin="0px"
+        android:padding="0px"
+        />
+    <ImageView
+        android:id="@+id/senderLocation"
+        android:layout_width="60px"
+        android:layout_height="60px"
+        android:src="@mipmap/location"
+        android:layout_margin="0px"
+        android:padding="0px"
+        />
+
+</RelativeLayout>
+
