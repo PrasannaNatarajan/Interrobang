@@ -35,10 +35,12 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     TextView t1,t2,t3;
-    Button button;
+    Button button,send;
 
     public static Map<String,Integer> wifiDetails;
     DatabaseReference dbRef;
+
+    double[][] mPositions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,106 +55,86 @@ public class MainActivity extends AppCompatActivity {
 
         dbRef = FirebaseDatabase.getInstance().getReference("routers");
 
+        mPositions = new double[3][2];
 
-
-
+        send = (Button) findViewById(R.id.button3);
         button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
+        String[] xyz=  new String[3];
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                WifiManager myWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                boolean wasEnabled = myWifiManager.isWifiEnabled();
-                if (!wasEnabled)
-                    myWifiManager.setWifiEnabled(true);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    Log.d("pras","inside permission");
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 0x12345);
-                }
-
-                if (myWifiManager.isWifiEnabled()) {
-                    if (myWifiManager.startScan()) {
-                        // List available APs
-                        Log.d("pras", "inside scan");
-                        List<ScanResult> scans = myWifiManager.getScanResults();
-                        Log.d("pras", "" + (scans == null));
-                        Log.d("pras", "" + scans.isEmpty());
-                        if (scans != null && !scans.isEmpty()) {
-                            int i=0;
-                            for (ScanResult scan : scans) {
-                                int level = WifiManager.calculateSignalLevel(scan.level, 20);
-                                //Other code
-                                Log.d("wifi", level + "");
-
-                                Log.d("pras",scan.SSID);
-
-                                wifiDetails.put(scan.BSSID,level);
-                            }
-                        } else {
-                            Log.d("pras", "inside else");
-                        }
-                    }
-                }
-
-
-                Set<Map.Entry<String, Integer>> set = wifiDetails.entrySet();
-                List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(set);
-                Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
-                {
-                    public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
-                    {
-                        return (o2.getValue()).compareTo( o1.getValue() );
-                    }
-                } );
-                for(Map.Entry<String, Integer> entry:list){
-                    Log.d("Pras",entry.getKey()+" ==== "+entry.getValue());
-                }
+                List<Map.Entry<String, Integer>> list = WifiStrength();
 
                 t1.setText(list.get(0).getKey()+" ==== "+list.get(0).getValue());
                 t2.setText(list.get(1).getKey()+" ==== "+list.get(1).getValue());
                 t3.setText(list.get(2).getKey()+" ==== "+list.get(2).getValue());
 
+
+
+
+                dbRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String res = "";
+                        int j=0,k=0;
+                        for(DataSnapshot dbSnap : dataSnapshot.getChildren()){
+                            Log.d("here",dbSnap.getKey());
+                            int i=0;
+                            if(dbSnap.getKey().equals("mac_1") || dbSnap.getKey().equals("mac_1") || dbSnap.getKey().equals("mac_1") )
+                                for(DataSnapshot MAC : dbSnap.getChildren()){
+                                    res += MAC.getValue().toString();
+                                    xyz[i] = MAC.getValue().toString();
+                                    i++;
+                                    mPositions[j][k]= Double.parseDouble(MAC.getValue().toString());
+                                    k++;
+                                }
+
+                            j++;
+
+
+                            Toast.makeText(MainActivity.this,res,Toast.LENGTH_LONG).show();
+                        }
+
+                        // Call strength to distance converter
+
+                        //Call Trilateration function
+
+
+                        // fix the co-ordinates as xyz[0],xyz[1],xyz[2]
+
+
+                        sendText(xyz[0],xyz[1],xyz[2]);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 // Call strength to distance converter
 
                 //Call Trilateration function
 
-                sendText("1","2","5");
+
+                // fix the co-ordinates as xyz[0],xyz[1],xyz[2]
+
+
 
 
 
             }
         });
 
-
-
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        dbRef.addValueEventListener(new ValueEventListener() {
+        send.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String res = "";
-                for(DataSnapshot dbSnap : dataSnapshot.getChildren()){
-                    for(DataSnapshot MAC : dbSnap.getChildren()){
-                        res += MAC.getValue().toString();
-                    }
-
-
-                    Toast.makeText(MainActivity.this,res,Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onClick(View view) {
+                sendText(xyz[0],xyz[1],xyz[2]);
             }
         });
+
     }
 
     @Override
@@ -197,6 +179,58 @@ public class MainActivity extends AppCompatActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, "http://interro.bang/pop/"+xCoord+"/"+yCoord+"/"+zCoord+"");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
+    }
+
+    public List<Map.Entry<String, Integer>> WifiStrength(){
+        WifiManager myWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        boolean wasEnabled = myWifiManager.isWifiEnabled();
+        if (!wasEnabled)
+            myWifiManager.setWifiEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("pras","inside permission");
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 0x12345);
+        }
+
+        if (myWifiManager.isWifiEnabled()) {
+            if (myWifiManager.startScan()) {
+                // List available APs
+                Log.d("pras", "inside scan");
+                List<ScanResult> scans = myWifiManager.getScanResults();
+                Log.d("pras", "" + (scans == null));
+                Log.d("pras", "" + scans.isEmpty());
+                if (scans != null && !scans.isEmpty()) {
+                    int i=0;
+                    for (ScanResult scan : scans) {
+                        int level = WifiManager.calculateSignalLevel(scan.level, 20);
+                        //Other code
+                        Log.d("wifi", level + "");
+
+                        Log.d("pras",scan.SSID);
+
+                        wifiDetails.put(scan.BSSID,level);
+                    }
+                } else {
+                    Log.d("pras", "inside else");
+                }
+            }
+        }
+
+
+        Set<Map.Entry<String, Integer>> set = wifiDetails.entrySet();
+        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(set);
+        Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
+        {
+            public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
+            {
+                return (o2.getValue()).compareTo( o1.getValue() );
+            }
+        } );
+        for(Map.Entry<String, Integer> entry:list){
+            Log.d("Pras",entry.getKey()+" ==== "+entry.getValue());
+        }
+
+        return list;
     }
 
 }
