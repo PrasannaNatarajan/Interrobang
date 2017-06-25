@@ -13,6 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -30,14 +37,23 @@ public class MainActivity extends AppCompatActivity {
     Button button;
 
     public static Map<String,Integer> wifiDetails;
+    DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
         t1 = (TextView) findViewById(R.id.textView);
         t2 = (TextView) findViewById(R.id.textView2);
         t3 = (TextView) findViewById(R.id.textView3);
+
+        dbRef = FirebaseDatabase.getInstance().getReference("routers");
+
+
+
 
         button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
@@ -107,6 +123,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String res = "";
+                for(DataSnapshot dbSnap : dataSnapshot.getChildren()){
+                    for(DataSnapshot MAC : dbSnap.getChildren()){
+                        res += MAC.getValue().toString();
+                    }
+
+
+                    Toast.makeText(MainActivity.this,res,Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 0x12345) {
@@ -140,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    public static void sendText(String input){
+        
     }
 
 }
