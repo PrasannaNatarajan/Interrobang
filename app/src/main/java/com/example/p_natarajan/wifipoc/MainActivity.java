@@ -3,6 +3,7 @@ package com.example.p_natarajan.wifipoc;
 import android.Manifest;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
@@ -113,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 t2.setText(list.get(1).getKey()+" ==== "+list.get(1).getValue());
                 t3.setText(list.get(2).getKey()+" ==== "+list.get(2).getValue());
 
+                // Call strength to distance converter
+
+                //Call Trilateration function
+
+                sendText("1","2","5");
 
 
 
@@ -184,8 +190,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void sendText(String input){
-        
+    public void sendText(String xCoord, String yCoord, String zCoord){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+//        sendIntent.setPackage("com.whatsapp");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "http://interro.bang/pop/"+xCoord+"/"+yCoord+"/"+zCoord+"");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
 }
