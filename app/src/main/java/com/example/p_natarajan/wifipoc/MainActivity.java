@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference dbRef;
 
     double[][] mPositions;
+    double[] distances;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         dbRef = FirebaseDatabase.getInstance().getReference("routers");
 
-        mPositions = new double[3][2];
+        mPositions = new double[3][3];
+        distances = new double[3];
 
         send = (Button) findViewById(R.id.button3);
         button = (Button) findViewById(R.id.button2);
@@ -81,26 +83,56 @@ public class MainActivity extends AppCompatActivity {
                         int j=0,k=0;
                         for(DataSnapshot dbSnap : dataSnapshot.getChildren()){
                             Log.d("here",dbSnap.getKey());
+                            k=0;
                             int i=0;
-                            if(dbSnap.getKey().equals("mac_1") || dbSnap.getKey().equals("mac_1") || dbSnap.getKey().equals("mac_1") )
-                                for(DataSnapshot MAC : dbSnap.getChildren()){
+                            if(dbSnap.getKey().equals("00:e7:44:0d:67:ac") || dbSnap.getKey().equals("02:1a:11:f2:f7:15") || dbSnap.getKey().equals("14:f6:5a:60:7f:25") ) {
+                                for (DataSnapshot MAC : dbSnap.getChildren()) {
                                     res += MAC.getValue().toString();
                                     xyz[i] = MAC.getValue().toString();
                                     i++;
-                                    mPositions[j][k]= Double.parseDouble(MAC.getValue().toString());
+                                    mPositions[j][k] = Double.parseDouble(MAC.getValue().toString());
+                                    Log.d("mPositions[j][k]",dbSnap.getKey()+""+mPositions[j][k]);
                                     k++;
                                 }
 
-                            j++;
+                                j++;
+
+                                Log.d("j",j+"");
+                                Log.d("k",k+"");
+
+                            }
 
 
                             Toast.makeText(MainActivity.this,res,Toast.LENGTH_LONG).show();
                         }
 
                         // Call strength to distance converter
+                        for(Map.Entry<String,Integer> lis: list){
+                            //if(lis.getKey().equals("")){
+                                //distances[0] = calculateDistance(lis.getValue(),2400);
+                            //}
+                            switch (lis.getKey()){
+                                case "00:e7:44:0d:67:ac":
+                                    distances[0] = calculateDistance(lis.getValue(),2400);
+                                    Log.d("distance",distances[0]+"");
+                                    break;
+                                case "02:1a:11:f2:f7:15":
+                                    distances[1] = calculateDistance(lis.getValue(),2400);
+                                    Log.d("distance",distances[1]+"");
+                                    break;
+                                case "14:f6:5a:60:7f:25":
+                                    distances[2] = calculateDistance(lis.getValue(),2400);
+                                    Log.d("distance",distances[2]+"");
+                                    break;
+                            }
+                        }
+
+
 
                         //Call Trilateration function
+                        Trilateration t = new Trilateration(mPositions,distances);
 
+                        t.getLocation();
 
                         // fix the co-ordinates as xyz[0],xyz[1],xyz[2]
 
@@ -115,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
                 // Call strength to distance converter
+
 
                 //Call Trilateration function
 
@@ -231,6 +264,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return list;
+    }
+
+    public double calculateDistance(double levelInDb, double freqInMHz)    {
+        double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
+        return Math.pow(10.0, exp);
     }
 
 }

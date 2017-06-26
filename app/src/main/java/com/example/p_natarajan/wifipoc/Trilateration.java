@@ -1,5 +1,7 @@
 package com.example.p_natarajan.wifipoc;
 
+import android.util.Log;
+
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 
@@ -62,6 +64,8 @@ public class Trilateration {
 
 
         double[] centroid = optimum.getPoint().toArray();
+        Log.d("centroid",centroid.length+"");
+        Log.d("centroid",centroid[0]+" : "+centroid[1]+"  :  "+centroid[2]+"");
         return centroid;
     }
 
