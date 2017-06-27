@@ -35,7 +35,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     TextView t1,t2,t3;
-    Button button,send;
+    Button button;
 
     public static Map<String,Double> wifiDetails;
     DatabaseReference dbRef;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         mPositions = new double[3][3];
         distances = new double[3];
 
-        send = (Button) findViewById(R.id.button3);
+
         button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
         String[] xyz=  new String[3];
@@ -150,26 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
-                // Call strength to distance converter
-
-
-                //Call Trilateration function
-
-
-                // fix the co-ordinates as xyz[0],xyz[1],xyz[2]
-
-
-
-
-
-            }
-        });
-
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendText(xyz[0],xyz[1],xyz[2]);
             }
         });
 
