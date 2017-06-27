@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     TextView t1,t2,t3;
     Button button,send;
 
-    public static Map<String,Integer> wifiDetails;
+    public static Map<String,Double> wifiDetails;
     DatabaseReference dbRef;
 
     double[][] mPositions;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Map.Entry<String, Integer>> list = WifiStrength();
+                List<Map.Entry<String, Double>> list = WifiStrength();
 
                 t1.setText(list.get(0).getKey()+" ==== "+list.get(0).getValue());
                 t2.setText(list.get(1).getKey()+" ==== "+list.get(1).getValue());
@@ -107,21 +107,24 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         // Call strength to distance converter
-                        for(Map.Entry<String,Integer> lis: list){
+                        for(Map.Entry<String,Double> lis: list){
                             //if(lis.getKey().equals("")){
                                 //distances[0] = calculateDistance(lis.getValue(),2400);
                             //}
                             switch (lis.getKey()){
                                 case "00:e7:44:0d:67:ac":
                                     distances[0] = calculateDistance(lis.getValue(),2400);
+//                                    distances[0] = 1;
                                     Log.d("distance",distances[0]+"");
                                     break;
                                 case "02:1a:11:f2:f7:15":
                                     distances[1] = calculateDistance(lis.getValue(),2400);
+//                                    distances[1] = 2;
                                     Log.d("distance",distances[1]+"");
                                     break;
                                 case "14:f6:5a:60:7f:25":
                                     distances[2] = calculateDistance(lis.getValue(),2400);
+//                                    distances[2] = Math.sqrt(10);
                                     Log.d("distance",distances[2]+"");
                                     break;
                             }
@@ -132,11 +135,13 @@ public class MainActivity extends AppCompatActivity {
                         //Call Trilateration function
                         Trilateration t = new Trilateration(mPositions,distances);
 
-                        t.getLocation();
+                        double[] centroid = t.getLocation();
+
 
                         // fix the co-ordinates as xyz[0],xyz[1],xyz[2]
-
-
+                        xyz[0] = Double.toString(centroid[0]);
+                        xyz[1] = Double.toString(centroid[1]);
+                        xyz[2] = Double.toString(centroid[2]);
                         sendText(xyz[0],xyz[1],xyz[2]);
                     }
 
@@ -214,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(sendIntent);
     }
 
-    public List<Map.Entry<String, Integer>> WifiStrength(){
+    public List<Map.Entry<String, Double>> WifiStrength(){
         WifiManager myWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         boolean wasEnabled = myWifiManager.isWifiEnabled();
         if (!wasEnabled)
@@ -235,7 +240,8 @@ public class MainActivity extends AppCompatActivity {
                 if (scans != null && !scans.isEmpty()) {
                     int i=0;
                     for (ScanResult scan : scans) {
-                        int level = WifiManager.calculateSignalLevel(scan.level, 20);
+                        Double level = (double)scan.level;
+                        Log.d("frequency",scan.frequency + "");
                         //Other code
                         Log.d("wifi", level + "");
 
@@ -250,16 +256,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Set<Map.Entry<String, Integer>> set = wifiDetails.entrySet();
-        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(set);
-        Collections.sort( list, new Comparator<Map.Entry<String, Integer>>()
+        Set<Map.Entry<String, Double>> set = wifiDetails.entrySet();
+        List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(set);
+        Collections.sort( list, new Comparator<Map.Entry<String, Double>>()
         {
-            public int compare( Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2 )
+            public int compare( Map.Entry<String, Double> o1, Map.Entry<String, Double> o2 )
             {
                 return (o2.getValue()).compareTo( o1.getValue() );
             }
         } );
-        for(Map.Entry<String, Integer> entry:list){
+        for(Map.Entry<String, Double> entry:list){
             Log.d("Pras",entry.getKey()+" ==== "+entry.getValue());
         }
 
