@@ -267,8 +267,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public double calculateDistance(double levelInDb, double freqInMHz)    {
-        double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
-        return Math.pow(10.0, exp);
+        //double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
+        //return Math.pow(10.0, exp);
+
+        double d = ((18.5 - levelInDb) / (10 * 1.7));
+        return Math.pow(d,10);
     }
 
 }
