@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,13 +33,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.example.p_natarajan.wifipoc.positionDetails;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView t1,t2,t3;
-    Button button;
+    Button button, upload;
+
+    EditText XEdit,YEdit;
 
     public static Map<String,Double> wifiDetails;
-    DatabaseReference dbRef;
+    DatabaseReference dbRef,upload_ref;
 
     double[][] mPositions;
     double[] distances;
@@ -54,7 +59,13 @@ public class MainActivity extends AppCompatActivity {
         t2 = (TextView) findViewById(R.id.textView2);
         t3 = (TextView) findViewById(R.id.textView3);
 
+        XEdit = (EditText) findViewById(R.id.editX);
+        YEdit = (EditText) findViewById(R.id.editY);
+
+        upload = (Button) findViewById(R.id.button3);
+
         dbRef = FirebaseDatabase.getInstance().getReference("routers");
+        upload_ref = FirebaseDatabase.getInstance().getReference("new");
 
         mPositions = new double[3][3];
         distances = new double[3];
@@ -153,6 +164,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                double X = Double.parseDouble(XEdit.getText().toString().trim());
+                double Y = Double.parseDouble(YEdit.getText().toString().trim());
+                List<Map.Entry<String, Double>> list = WifiStrength();
+
+                String PosID = upload_ref.push().getKey();
+
+                positionDetails pos = new positionDetails(X,Y,"",list);
+                insertNewPosition(PosID,pos);
+            }
+        });
+
     }
 
     @Override
@@ -223,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                         Double level = (double)scan.level;
                         Log.d("frequency",scan.frequency + "");
                         //Other code
-                        Log.d("wifi", level + "");
+                        Log.d("pras", level + "");
 
                         Log.d("pras",scan.SSID);
 
@@ -258,6 +285,17 @@ public class MainActivity extends AppCompatActivity {
 
         double d = ((18.5 - levelInDb) / (10 * 1.7));
         return Math.pow(d,10);
+    }
+
+    public void insertNewPosition(String PosID, positionDetails pos){
+        upload_ref.child(PosID).setValue(pos);
+        //upload_ref.child(PosID).child("list").setValue(pos.getList());
+        //for(Map.Entry<String,Double> lis: pos.getList()){
+            //upload_ref.child(PosID).child(lis.getKey()).setValue(lis.getValue());
+        //}
+
+
+
     }
 
 }

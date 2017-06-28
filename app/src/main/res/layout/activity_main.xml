@@ -10,22 +10,21 @@
         android:id="@+id/button2"
         android:layout_width="176dp"
         android:layout_height="93dp"
-        android:layout_marginBottom="144dp"
         android:layout_marginRight="104dp"
         android:text="SCAN and SEND"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/button3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="106dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
         android:orientation="vertical"
-        android:layout_above="@+id/button2"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="81dp"
-        android:layout_centerVertical="true"
-         >
+        android:layout_marginTop="37dp">
 
         <TextView
             android:id="@+id/textView3"
@@ -50,6 +49,39 @@
             android:layout_height="wrap_content"
             android:text="Third" />
 
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="81dp"
+        android:text="UPLOAD" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_above="@+id/button3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp">
+
+
+        <EditText
+            android:id="@+id/editX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/editY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
 </RelativeLayout>
