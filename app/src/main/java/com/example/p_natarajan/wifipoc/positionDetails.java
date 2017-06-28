@@ -13,25 +13,16 @@ public class positionDetails {
     private double Y;
     private String Z;
 
-    private String[] MAC_addresses;
-    private Integer[] signalStrengths;
-
     private List<Map.Entry<String, Double>> list;
 
     public positionDetails(){
 
     }
 
-    public List<Map.Entry<String, Double>> getList() {
-        return list;
-    }
-
     public positionDetails(double x, double y, String z, List<Map.Entry<String,Double>>list) {
         X = x;
         Y = y;
         Z = z;
-        //this.MAC_addresses = MAC_addresses;
-        //this.signalStrengths = signalStrengths;
         this.list = list;
     }
 
@@ -46,13 +37,8 @@ public class positionDetails {
     public String getZ() {
         return Z;
     }
-
-    public String[] getMAC_addresses() {
-        return MAC_addresses;
-    }
-
-    public Integer[] getSignalStrengths() {
-        return signalStrengths;
+    public List<Map.Entry<String, Double>> getList() {
+        return list;
     }
 
     public void setX(double x) {
@@ -67,11 +53,7 @@ public class positionDetails {
         Z = z;
     }
 
-    public void setMAC_addresses(String[] MAC_addresses) {
-        this.MAC_addresses = MAC_addresses;
-    }
-
-    public void setSignalStrengths(Integer[] signalStrengths) {
-        this.signalStrengths = signalStrengths;
+    public void setList(List<Map.Entry<String, Double>> list) {
+        this.list = list;
     }
 }

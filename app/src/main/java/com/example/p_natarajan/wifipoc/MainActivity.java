@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     EditText XEdit,YEdit;
 
+    //public static positionDetails[][] auxilary = new positionDetails[5][4];
+    public static positionDetails data_download = new positionDetails();
     public static Map<String,Double> wifiDetails;
     DatabaseReference dbRef,upload_ref;
 
@@ -164,6 +166,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                upload_ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for(DataSnapshot dbSnap: dataSnapshot.getChildren()){
+                            java.util.HashMap h = (HashMap)dbSnap.getValue();
+                            Log.d("data",""+dbSnap.getValue().getClass()+ "  "+ dbSnap.getValue());
+                            Log.d("data",""+h.get("x").getClass()+" : "+h.get("y").getClass());
+
+                            data_download.setX((double)(Long)h.get("x"));
+                            data_download.setY(Double.parseDouble(h.get("y")+""));
+                            data_download.setZ("");
+                            data_download.setList((List)h.get("list"));
+                            Log.d("data",h.get("list").getClass()+"");
+                            //List<Map.Entry<String,Double>> lis = new ArrayList<Map.Entry<String, Double>>();
+                            Log.d("data",data_download.getList().get(0)+"   ");
+
+                            //data_download.setX(dbSnap.getValue().get("x"));
+                            //Log.d("data_download",data_download.getX()+" : "+data_download.getY()+" ");
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                return false;
+            }
+        });
+
 
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,23 +317,26 @@ public class MainActivity extends AppCompatActivity {
         return list;
     }
 
-    public double calculateDistance(double levelInDb, double freqInMHz)    {
-        //double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
-        //return Math.pow(10.0, exp);
-
+    /*public double calculateDistance(double levelInDb, double freqInMHz)    {
         double d = ((18.5 - levelInDb) / (10 * 1.7));
         return Math.pow(d,10);
+    }*/
+
+    public Double calculateDistance(double pRssi, int pTxPower){
+        if(pRssi == 0)
+            return -1.0;
+
+        Double ratio = pRssi*1.0/pTxPower;
+
+        if(ratio<1.0){
+            return Math.pow(ratio, 10);
+        }else {
+            return ((0.89976)*Math.pow(ratio,7.7095) + 0.111);
+        }
     }
 
     public void insertNewPosition(String PosID, positionDetails pos){
         upload_ref.child(PosID).setValue(pos);
-        //upload_ref.child(PosID).child("list").setValue(pos.getList());
-        //for(Map.Entry<String,Double> lis: pos.getList()){
-            //upload_ref.child(PosID).child(lis.getKey()).setValue(lis.getValue());
-        //}
-
-
-
     }
 
 }
