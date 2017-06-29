@@ -126,17 +126,17 @@ public class MainActivity extends AppCompatActivity {
                             //}
                             switch (lis.getKey()){
                                 case "00:e7:44:0d:67:ac":
-                                    distances[0] = calculateDistance(lis.getValue(),2400);
+                                    distances[0] = calculateDistance(lis.getValue(),2437);
 //                                    distances[0] = 1;
                                     Log.d("distance",distances[0]+"");
                                     break;
                                 case "02:1a:11:f2:f7:15":
-                                    distances[1] = calculateDistance(lis.getValue(),2400);
+                                    distances[1] = calculateDistance(lis.getValue(),2462);
 //                                    distances[1] = 2;
                                     Log.d("distance",distances[1]+"");
                                     break;
                                 case "14:f6:5a:60:7f:25":
-                                    distances[2] = calculateDistance(lis.getValue(),2400);
+                                    distances[2] = calculateDistance(lis.getValue(),2412);
 //                                    distances[2] = Math.sqrt(10);
                                     Log.d("distance",distances[2]+"");
                                     break;
@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("pras",scan.SSID);
 
+
                         wifiDetails.put(scan.BSSID,level);
                     }
                 } else {
@@ -317,12 +318,11 @@ public class MainActivity extends AppCompatActivity {
         return list;
     }
 
-    /*public double calculateDistance(double levelInDb, double freqInMHz)    {
-        double d = ((18.5 - levelInDb) / (10 * 1.7));
-        return Math.pow(d,10);
-    }*/
+    public double calculateDistance(double levelInDb, double freqInMHz)    {
+        return Math.pow(10,(27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb))/20);
+    }
 
-    public Double calculateDistance(double pRssi, int pTxPower){
+    /*public Double calculateDistance(double pRssi, int pTxPower){
         if(pRssi == 0)
             return -1.0;
 
@@ -333,10 +333,16 @@ public class MainActivity extends AppCompatActivity {
         }else {
             return ((0.89976)*Math.pow(ratio,7.7095) + 0.111);
         }
-    }
+    }*/
 
     public void insertNewPosition(String PosID, positionDetails pos){
         upload_ref.child(PosID).setValue(pos);
+    }
+
+    public positionDetails calculateProximity(positionDetails orig){
+
+        positionDetails res = new positionDetails();
+        return res;
     }
 
 }
