@@ -6,12 +6,30 @@
     android:layout_height="match_parent"
     tools:context="com.example.p_natarajan.wifipoc.MainActivity">
 
+    <com.gjiazhe.panoramaimageview.PanoramaImageView
+        android:id="@+id/panorama_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/tiled_background"
+        app:piv_enablePanoramaMode="true"
+        app:piv_show_scrollbar="false"
+        app:piv_invertScrollDirection="true" />
+
+
     <Button
         android:id="@+id/button2"
         android:layout_width="176dp"
         android:layout_height="93dp"
         android:layout_marginRight="104dp"
         android:text="SCAN and SEND"
+        android:textColor="#FFF"
+        android:background="@drawable/button_style"
+
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+
         android:layout_above="@+id/button3"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="106dp" />
@@ -58,7 +76,12 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="81dp"
-        android:text="UPLOAD" />
+        android:text="UPLOAD"
+
+        android:textColor="#FFF"
+        android:background="@drawable/button_style"
+
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"

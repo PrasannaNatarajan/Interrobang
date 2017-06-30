@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gjiazhe.panoramaimageview.GyroscopeObserver;
+import com.gjiazhe.panoramaimageview.PanoramaImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     double[][] mPositions;
     double[] distances;
 
+    private GyroscopeObserver gyroscopeObserver;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -57,6 +62,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_main);
+
+        gyroscopeObserver = new GyroscopeObserver();
+        // Set the maximum radian the device should rotate to show image's bounds.
+        // It should be set between 0 and π/2.
+        // The default value is π/9.
+        gyroscopeObserver.setMaxRotateRadian(Math.PI/9);
+
+        PanoramaImageView panoramaImageView = (PanoramaImageView) findViewById(R.id.panorama_image_view);
+        // Set GyroscopeObserver for PanoramaImageView.
+        panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+
         t1 = (TextView) findViewById(R.id.textView);
         t2 = (TextView) findViewById(R.id.textView2);
         t3 = (TextView) findViewById(R.id.textView3);
@@ -218,6 +234,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register GyroscopeObserver.
+        gyroscopeObserver.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister GyroscopeObserver.
+        gyroscopeObserver.unregister();
     }
 
     @Override
