@@ -125,17 +125,17 @@ public class MainActivity extends AppCompatActivity {
                                 //distances[0] = calculateDistance(lis.getValue(),2400);
                             //}
                             switch (lis.getKey()){
-                                case "00:e7:44:0d:67:ac":
+                                case "78:a8:73:23:25:5a":
                                     distances[0] = calculateDistance(lis.getValue(),2437);
 //                                    distances[0] = 1;
                                     Log.d("distance",distances[0]+"");
                                     break;
-                                case "02:1a:11:f2:f7:15":
+                                case "8c:be:be:33:8e:6f":
                                     distances[1] = calculateDistance(lis.getValue(),2462);
 //                                    distances[1] = 2;
                                     Log.d("distance",distances[1]+"");
                                     break;
-                                case "14:f6:5a:60:7f:25":
+                                case "c0:ee:fb:e1:33:9b":
                                     distances[2] = calculateDistance(lis.getValue(),2412);
 //                                    distances[2] = Math.sqrt(10);
                                     Log.d("distance",distances[2]+"");
