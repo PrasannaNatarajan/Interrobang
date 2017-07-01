@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#1a85b6</color>
+    <color name="colorPrimaryDark">#024564</color>
+    <color name="primaryText">#d7effa</color>
+    <color name="colorAccent">#09d19f</color>
+    <color name="guillotine_background">#024564</color>
+    <color name="guillotine_background_dark">#1a85b6</color>
+    <color name="selected_item_color">#09d19f</color>
 </resources>

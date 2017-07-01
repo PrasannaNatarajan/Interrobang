@@ -8,15 +8,21 @@ import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gjiazhe.panoramaimageview.GyroscopeObserver;
+import com.gjiazhe.panoramaimageview.PanoramaImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,8 +40,24 @@ import java.util.Map;
 import java.util.Set;
 
 import com.example.p_natarajan.wifipoc.positionDetails;
+import com.yalantis.guillotine.animation.GuillotineAnimation;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final long RIPPLE_DURATION = 250;
+
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.root)
+    FrameLayout root;
+    @BindView(R.id.content_hamburger)
+    View contentHamburger;
+
+
 
     TextView t1,t2,t3;
     Button button, upload;
@@ -50,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     double[][] mPositions;
     double[] distances;
 
+    private GyroscopeObserver gyroscopeObserver;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -57,6 +82,33 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
+        }
+
+        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine, null);
+        root.addView(guillotineMenu);
+
+        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
+                .setStartDelay(RIPPLE_DURATION)
+                .setActionBarViewForAnimation(toolbar)
+                .setClosedOnStart(true)
+                .build();
+
+        gyroscopeObserver = new GyroscopeObserver();
+        // Set the maximum radian the device should rotate to show image's bounds.
+        // It should be set between 0 and π/2.
+        // The default value is π/9.
+        gyroscopeObserver.setMaxRotateRadian(Math.PI/9);
+
+        PanoramaImageView panoramaImageView = (PanoramaImageView) findViewById(R.id.panorama_image_view);
+        // Set GyroscopeObserver for PanoramaImageView.
+        panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+
         t1 = (TextView) findViewById(R.id.textView);
         t2 = (TextView) findViewById(R.id.textView2);
         t3 = (TextView) findViewById(R.id.textView3);
@@ -76,18 +128,17 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
         String[] xyz=  new String[3];
+        double[] arr = new double[3];
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 List<Map.Entry<String, Double>> list = WifiStrength();
 
                 t1.setText(list.get(0).getKey()+" ==== "+list.get(0).getValue());
                 t2.setText(list.get(1).getKey()+" ==== "+list.get(1).getValue());
                 t3.setText(list.get(2).getKey()+" ==== "+list.get(2).getValue());
-
-
-
 
                 dbRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -127,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                             switch (lis.getKey()){
                                 case "78:a8:73:23:25:5a":
                                     distances[0] = calculateDistance(lis.getValue(),2437);
-//                                    distances[0] = 1;
+//                                    distances[0] = 1;0
                                     Log.d("distance",distances[0]+"");
                                     break;
                                 case "8c:be:be:33:8e:6f":
@@ -165,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
 
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -218,6 +270,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register GyroscopeObserver.
+        gyroscopeObserver.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister GyroscopeObserver.
+        gyroscopeObserver.unregister();
     }
 
     @Override

@@ -4,16 +4,37 @@ import android.app.Activity;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.yalantis.guillotine.animation.GuillotineAnimation;
+
 import java.util.List;
 
-public class ViewLocation extends Activity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class ViewLocation extends AppCompatActivity {
+
+
+    private static final long RIPPLE_DURATION = 250;
+
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.root)
+    FrameLayout root;
+    @BindView(R.id.content_hamburger)
+    View contentHamburger;
+
 
     int screenHeight = 1920;
     int screenWidth = 1080;
@@ -33,12 +54,28 @@ public class ViewLocation extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_view_location);
 
+        ButterKnife.bind(this);
+
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
+        }
+
+        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine, null);
+        root.addView(guillotineMenu);
+
+        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
+                .setStartDelay(RIPPLE_DURATION)
+                .setActionBarViewForAnimation(toolbar)
+                .setClosedOnStart(true)
+                .build();
         Uri data = getIntent().getData();
         String scheme = data.getScheme(); // "http"
         String host = data.getHost(); // "twitter.com"

@@ -21,7 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            />
         <activity android:name=".ViewLocation">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
