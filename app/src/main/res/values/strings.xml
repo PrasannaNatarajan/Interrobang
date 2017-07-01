@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WifiPOC</string>
+    <!--<string name="profile">PROFILE</string>-->
+    <string name="RECEIVE">RECEIVE</string>
+    <string name="SEND">SEND</string>
+    <string name="team">TEAM</string>
 </resources>

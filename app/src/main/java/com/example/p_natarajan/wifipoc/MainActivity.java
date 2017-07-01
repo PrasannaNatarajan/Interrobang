@@ -8,12 +8,16 @@ import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,8 +40,24 @@ import java.util.Map;
 import java.util.Set;
 
 import com.example.p_natarajan.wifipoc.positionDetails;
+import com.yalantis.guillotine.animation.GuillotineAnimation;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final long RIPPLE_DURATION = 250;
+
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.root)
+    FrameLayout root;
+    @BindView(R.id.content_hamburger)
+    View contentHamburger;
+
+
 
     TextView t1,t2,t3;
     Button button, upload;
@@ -62,6 +82,22 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
+        }
+
+        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine, null);
+        root.addView(guillotineMenu);
+
+        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
+                .setStartDelay(RIPPLE_DURATION)
+                .setActionBarViewForAnimation(toolbar)
+                .setClosedOnStart(true)
+                .build();
 
         gyroscopeObserver = new GyroscopeObserver();
         // Set the maximum radian the device should rotate to show image's bounds.
@@ -92,18 +128,17 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
         String[] xyz=  new String[3];
+        double[] arr = new double[3];
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 List<Map.Entry<String, Double>> list = WifiStrength();
 
                 t1.setText(list.get(0).getKey()+" ==== "+list.get(0).getValue());
                 t2.setText(list.get(1).getKey()+" ==== "+list.get(1).getValue());
                 t3.setText(list.get(2).getKey()+" ==== "+list.get(2).getValue());
-
-
-
 
                 dbRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -143,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                             switch (lis.getKey()){
                                 case "00:e7:44:0d:67:ac":
                                     distances[0] = calculateDistance(lis.getValue(),2437);
-//                                    distances[0] = 1;
+//                                    distances[0] = 1;0
                                     Log.d("distance",distances[0]+"");
                                     break;
                                 case "02:1a:11:f2:f7:15":
@@ -181,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
 
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
