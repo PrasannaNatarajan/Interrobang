@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.content_hamburger)
     View contentHamburger;
 
-
+    public static ArrayList<positionDetails> aux[]= new ArrayList[3];
 
     TextView t1,t2,t3;
     Button button, upload;
@@ -227,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         for(DataSnapshot dbSnap: dataSnapshot.getChildren()){
+
+                            data_download = new positionDetails();
                             java.util.HashMap h = (HashMap)dbSnap.getValue();
                             Log.d("data",""+dbSnap.getValue().getClass()+ "  "+ dbSnap.getValue());
                             Log.d("data",""+h.get("x").getClass()+" : "+h.get("y").getClass());
@@ -241,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //data_download.setX(dbSnap.getValue().get("x"));
                             //Log.d("data_download",data_download.getX()+" : "+data_download.getY()+" ");
+                            aux[0].add(data_download);
 
                         }
                     }
@@ -405,10 +408,65 @@ public class MainActivity extends AppCompatActivity {
         upload_ref.child(PosID).setValue(pos);
     }
 
-    public positionDetails calculateProximity(positionDetails orig){
+    public static positionDetails calculateProximity(ArrayList<Map.Entry<String,Double>>user){
 
         positionDetails res = new positionDetails();
+        int i=0;
+        for(i=0;i<aux.length;i++){
+            int len = aux[0].size();
+            if(len>0){
+                for(int j=0;j<len;j++){
+                    if(aux[i].get(j).getList().get(j).getKey() == user.get(i).getKey())
+                        aux[i+1].add(aux[i].get(j));
+                }
+            }
+            else
+                break;
+        }
+        if(aux[i-1].size() == 1)
+        {
+            Log.d("print",""+aux[i-1].get(0).getX()+":"+aux[i-1].get(0).getY());
+            res.setX(aux[i-1].get(0).getX());
+            res.setY(aux[i-1].get(0).getY());
+            res.setZ("");
+            res.setList(user);
+        }
+        else
+        {
+            int closest_elem = getClosestElem(aux[i-1],user,i);
+            Log.d("print",aux[i-1].get(closest_elem).getX()+" : " +aux[i-1].get(closest_elem).getY());
+            res.setX(aux[i-1].get(closest_elem).getX());
+            res.setY(aux[i-1].get(closest_elem).getY());
+            res.setZ("");
+            res.setList(user);
+        }
+
+
+
         return res;
     }
+
+    public static int getClosestElem(ArrayList<positionDetails> aux, ArrayList<Map.Entry<String,Double>> user, int i){
+        int m,n,minIndex;
+        double min;
+        min = aux.get(0).getList().get(0).getValue();
+        minIndex = 0;
+
+        for(n=0;n<i;n++)
+        {
+            for( m=0; m<3; m++)
+            {
+                if(Math.abs(aux.get(n).getList().get(m).getValue() - user.get(m).getValue())<min)
+                {
+                    min = Math.abs(aux.get(n).getList().get(m).getValue() - user.get(m).getValue());
+                    minIndex = n;
+                }
+            }
+        }
+
+        return minIndex;
+    }
+
+
 
 }
