@@ -6,8 +6,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
     tools:context="com.example.p_natarajan.wifipoc.LandingPage">
 
+    <com.sdsmdg.harjot.rotatingtext.RotatingTextWrapper
+        android:id="@+id/custom_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"

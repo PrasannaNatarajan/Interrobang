@@ -43,6 +43,7 @@ dependencies {
     compile 'com.github.Yalantis:GuillotineMenu-Android:1.2'
     compile 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    compile 'com.sdsmdg.harjot:rotatingtext:1.0.2'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'
