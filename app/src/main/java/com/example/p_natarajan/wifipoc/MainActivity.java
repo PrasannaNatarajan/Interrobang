@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     PanoramaImageView panoramaImageView;
 
 
-    public static ArrayList<positionDetails> aux[]= new ArrayList[3];   // Priority list length = 3
+    public static ArrayList<positionDetails> aux[]= new ArrayList[4];   // Priority list length = 3
 
     //public static positionDetails[][] auxilary = new positionDetails[5][4];
     public static positionDetails data_download = new positionDetails();
@@ -423,7 +423,8 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap temph;
         positionDetails res = new positionDetails();
-        int i;
+        int i=0;
+        Log.d("ERROR001","aux.length = " + aux.length);
         for(i=0;i<aux.length;i++){
             int len = aux[i].size();
             if(len>0){
@@ -432,12 +433,15 @@ public class MainActivity extends AppCompatActivity {
                     temph = (HashMap)aux[i].get(j).getList().get(i);
                     if(temph.get("key").equals(user.get(i).getKey()))
                         // for priority k, i=k and check if the kth element in the list is same as user's kth element
-                        aux[i+1].add(aux[i].get(j));
+                    {
+                        aux[i + 1].add(aux[i].get(j));
+                    }
                 }
             }
             else
                 break;
         }
+        Log.d("ERROR001","post loop i = " + i);
         if(aux[i-1].size() == 1)
         {
             Log.d("print",""+aux[i-1].get(0).getX()+":"+aux[i-1].get(0).getY());
