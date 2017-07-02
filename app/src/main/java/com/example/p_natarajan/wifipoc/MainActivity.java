@@ -1,14 +1,12 @@
 package com.example.p_natarajan.wifipoc;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -73,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.panorama_image_view)
     PanoramaImageView panoramaImageView;
 
+    String logString = new String();
 
-    public static ArrayList<positionDetails> aux[]= new ArrayList[3];   // Priority list length = 3
+    public static ArrayList<positionDetails> aux[]= new ArrayList[4];   // Priority list length = 3
 
     //public static positionDetails[][] auxilary = new positionDetails[5][4];
     public static positionDetails data_download = new positionDetails();
@@ -83,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
     double[][] mPositions;
     double[] distances;
+
+    public static String toastText = new String();
 
     private GyroscopeObserver gyroscopeObserver;
 
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         String[] xyz=  new String[3];
         double[] arr = new double[3];
 
-        button.setOnClickListener(new View.OnClickListener() {
+/*        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -218,18 +219,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
+        logString="aux.size = 4\n";
 
 
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-
+                logString+="LongClick\n";
                 upload_ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        for(int i=0;i<3;i++)
+                        Log.d("dbSnap",dataSnapshot.toString());
+                        logString+="onDataChange\n";
+                        for(int i=0;i<=3;i++)
                             aux[i] = new ArrayList<positionDetails>();
 
                         for(DataSnapshot dbSnap: dataSnapshot.getChildren()){
@@ -251,12 +254,14 @@ public class MainActivity extends AppCompatActivity {
                             //data_download.setX(dbSnap.getValue().get("x"));
                             //Log.d("data_download",data_download.getX()+" : "+data_download.getY()+" ");
                             aux[0].add(data_download);
-
+                            logString+=aux[0].toString()+"\n";
                         }
                         //Log.d("res_data",(HashMap)aux[0].get(0).getList().get(0).get+"");
                         positionDetails res= calculateProximity(WifiStrength());
+                        logString+="Calculated x,y = " + res.getX() + "," + res.getY() + "\n";
                         Log.d("res",res.getX()+" : "+res.getY());
-                        Toast.makeText(MainActivity.this,res.getX()+" : "+res.getY(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,res.getX()+" : "+res.getY() + "\n" + toastText,Toast.LENGTH_LONG).show();
+                        toastText="";
                     }
 
                     @Override
@@ -362,15 +367,18 @@ public class MainActivity extends AppCompatActivity {
                 List<ScanResult> scans = myWifiManager.getScanResults();
                 Log.d("pras", "" + (scans == null));
                 Log.d("pras", "" + scans.isEmpty());
+
+                int topThree = 3;
                 if (scans != null && !scans.isEmpty()) {
                     int i=0;
                     for (ScanResult scan : scans) {
                         Double level = (double)scan.level;
                         Log.d("frequency",scan.frequency + "");
                         //Other code
-                        Log.d("pras", level + "");
+                        Log.d("pras", scan.SSID + " : " + scan.level);
+//                        if(topThree!=0)
 
-                        Log.d("pras",scan.SSID);
+//                        Log.d("pras",scan.SSID);
 
 
                         wifiDetails.put(scan.BSSID,level);
@@ -391,6 +399,8 @@ public class MainActivity extends AppCompatActivity {
                 return (o2.getValue()).compareTo( o1.getValue() );
             }
         } );
+        for(int tt = 0; tt<3; tt++)
+            toastText+= list.get(tt).getKey()+ " : " + list.get(tt).getValue()   + "\n";
         for(Map.Entry<String, Double> entry:list){
             Log.d("Pras",entry.getKey()+" ==== "+entry.getValue());
         }
@@ -423,23 +433,29 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap temph;
         positionDetails res = new positionDetails();
-        int i;
-        for(i=0;i<aux.length;i++){
+        int i=0;
+        Log.d("ERROR001","aux.length = " + aux.length);
+        for(i=0;i<aux.length-1;i++){
             int len = aux[i].size();
             if(len>0){
                 for(int j=0;j<len;j++){
-                    Log.d("ij",i+":"+j);
+
                     temph = (HashMap)aux[i].get(j).getList().get(i);
                     if(temph.get("key").equals(user.get(i).getKey()))
                         // for priority k, i=k and check if the kth element in the list is same as user's kth element
-                        // if(i==aux.length-1)
-                            aux[i+1].add(aux[i].get(j));
+                    {
+                        aux[i + 1].add(aux[i].get(j));
+                    }
                 }
             }
             else
                 break;
         }
-        if(aux[i-1].size() == 1)
+        Log.d("ERROR001","post loop i = " + i);
+        if (aux[i].size() == 0)
+            i--;
+
+        if(aux[i].size() == 1)
         {
             Log.d("print",""+aux[i-1].get(0).getX()+":"+aux[i-1].get(0).getY());
             res.setX(aux[i-1].get(0).getX());
@@ -447,32 +463,33 @@ public class MainActivity extends AppCompatActivity {
             res.setZ("");
             res.setList(user);
         }
-        else
-        {
-            int closest_elem = getClosestElem(aux[i-1],user,i);
-            Log.d("print",aux[i-1].get(closest_elem).getX()+" : " +aux[i-1].get(closest_elem).getY());
-            res.setX(aux[i-1].get(closest_elem).getX());
-            res.setY(aux[i-1].get(closest_elem).getY());
+        else {
+
+            int closest_elem = getClosestElem(aux[i], user);
+            Log.d("print", aux[i].get(closest_elem).getX() + " : " + aux[i].get(closest_elem).getY());
+            res.setX(aux[i].get(closest_elem).getX());
+            res.setY(aux[i].get(closest_elem).getY());
             res.setZ("");
             res.setList(user);
         }
 
-
-
+        toastText+="Matching priority : " + i + "\n";
         return res;
     }
 
-    public static int getClosestElem(ArrayList<positionDetails> aux, List<Map.Entry<String,Double>> user, int i){
+    public static int getClosestElem(ArrayList<positionDetails> aux, List<Map.Entry<String,Double>> user){
         int m,n,minIndex;
         double min;
+        toastText+="Extended comparison ENABLED\n";
         HashMap temph = (HashMap)aux.get(0).getList().get(0);
         min = Double.parseDouble(temph.get("value")+"");
         minIndex = 0;
 
-        for(n=0;n<i;n++)
+        for(n=0;n<aux.size();n++)
         {
             for( m=0; m<PRIORITY_LIST_LEN; m++)
             {
+//                Log.d("ERROR101"," n = " + n + " aux.size" + aux.size());
                 temph = (HashMap)aux.get(n).getList().get(m);
                 if(Math.abs(Double.parseDouble(temph.get("value")+"") - user.get(m).getValue())<min)
                 {
