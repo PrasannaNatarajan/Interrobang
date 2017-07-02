@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                             data_download.setY(Double.parseDouble(h.get("y")+""));
                             data_download.setZ("");
                             data_download.setList((List)h.get("list"));
-                            Log.d("data",h.get("list").getClass()+"");
+                            //Log.d("data",h.get("list").getClass()+"");
                             //List<Map.Entry<String,Double>> lis = new ArrayList<Map.Entry<String, Double>>();
                             HashMap temph = (HashMap)data_download.getList().get(0);
                             Log.d("res_data",temph.get("key")+"   ");
@@ -428,11 +428,12 @@ public class MainActivity extends AppCompatActivity {
             int len = aux[i].size();
             if(len>0){
                 for(int j=0;j<len;j++){
-
+                    Log.d("ij",i+":"+j);
                     temph = (HashMap)aux[i].get(j).getList().get(i);
                     if(temph.get("key").equals(user.get(i).getKey()))
                         // for priority k, i=k and check if the kth element in the list is same as user's kth element
-                        aux[i+1].add(aux[i].get(j));
+                        // if(i==aux.length-1)
+                            aux[i+1].add(aux[i].get(j));
                 }
             }
             else
