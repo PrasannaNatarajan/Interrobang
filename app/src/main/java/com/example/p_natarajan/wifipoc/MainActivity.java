@@ -464,16 +464,19 @@ public class MainActivity extends AppCompatActivity {
     public static int getClosestElem(ArrayList<positionDetails> aux, List<Map.Entry<String,Double>> user, int i){
         int m,n,minIndex;
         double min;
-        min = aux.get(0).getList().get(0).getValue();
+        HashMap temph = (HashMap)aux.get(0).getList().get(0);
+        min = Double.parseDouble(temph.get("value")+"");
         minIndex = 0;
 
         for(n=0;n<i;n++)
         {
             for( m=0; m<PRIORITY_LIST_LEN; m++)
             {
-                if(Math.abs(aux.get(n).getList().get(m).getValue() - user.get(m).getValue())<min)
+                temph = (HashMap)aux.get(n).getList().get(m);
+                if(Math.abs(Double.parseDouble(temph.get("value")+"") - user.get(m).getValue())<min)
                 {
-                    min = Math.abs(aux.get(n).getList().get(m).getValue() - user.get(m).getValue());
+                    temph = (HashMap) aux.get(n).getList().get(m);
+                    min = Math.abs(Double.parseDouble(temph.get("value")+"") - user.get(m).getValue());
                     minIndex = n;
                 }
             }
