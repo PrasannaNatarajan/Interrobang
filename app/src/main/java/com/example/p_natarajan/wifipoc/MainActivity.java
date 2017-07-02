@@ -48,7 +48,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private static final long RIPPLE_DURATION = 250;
-
+    private static final int PRIORITY_LIST_LEN = 3;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,13 +56,25 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout root;
     @BindView(R.id.content_hamburger)
     View contentHamburger;
+    @BindView(R.id.textView)
+    TextView t1;
+    @BindView(R.id.textView2)
+    TextView t2;
+    @BindView(R.id.textView3)
+    TextView t3;
+    @BindView(R.id.editX)
+    EditText XEdit;
+    @BindView(R.id.editY)
+    EditText YEdit;
+    @BindView(R.id.button3)
+    Button upload;
+    @BindView(R.id.button2)
+    Button button;
+    @BindView(R.id.panorama_image_view)
+    PanoramaImageView panoramaImageView;
 
-    public static ArrayList<positionDetails> aux[]= new ArrayList[3];
 
-    TextView t1,t2,t3;
-    Button button, upload;
-
-    EditText XEdit,YEdit;
+    public static ArrayList<positionDetails> aux[]= new ArrayList[3];   // Priority list length = 3
 
     //public static positionDetails[][] auxilary = new positionDetails[5][4];
     public static positionDetails data_download = new positionDetails();
@@ -105,18 +117,10 @@ public class MainActivity extends AppCompatActivity {
         // The default value is π/9.
         gyroscopeObserver.setMaxRotateRadian(Math.PI/9);
 
-        PanoramaImageView panoramaImageView = (PanoramaImageView) findViewById(R.id.panorama_image_view);
         // Set GyroscopeObserver for PanoramaImageView.
         panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
 
-        t1 = (TextView) findViewById(R.id.textView);
-        t2 = (TextView) findViewById(R.id.textView2);
-        t3 = (TextView) findViewById(R.id.textView3);
 
-        XEdit = (EditText) findViewById(R.id.editX);
-        YEdit = (EditText) findViewById(R.id.editY);
-
-        upload = (Button) findViewById(R.id.button3);
 
         dbRef = FirebaseDatabase.getInstance().getReference("routers");
         upload_ref = FirebaseDatabase.getInstance().getReference("new");
@@ -125,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         distances = new double[3];
 
 
-        button = (Button) findViewById(R.id.button2);
         wifiDetails = new HashMap<>();
         String[] xyz=  new String[3];
         double[] arr = new double[3];
@@ -422,11 +425,13 @@ public class MainActivity extends AppCompatActivity {
         positionDetails res = new positionDetails();
         int i;
         for(i=0;i<aux.length;i++){
-            int len = aux[0].size();
+            int len = aux[i].size();
             if(len>0){
                 for(int j=0;j<len;j++){
-                    temph = (HashMap)aux[i].get(j).getList().get(j);
+
+                    temph = (HashMap)aux[i].get(j).getList().get(i);
                     if(temph.get("key").equals(user.get(i).getKey()))
+                        // for priority k, i=k and check if the kth element in the list is same as user's kth element
                         aux[i+1].add(aux[i].get(j));
                 }
             }
@@ -464,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
 
         for(n=0;n<i;n++)
         {
-            for( m=0; m<3; m++)
+            for( m=0; m<PRIORITY_LIST_LEN; m++)
             {
                 if(Math.abs(aux.get(n).getList().get(m).getValue() - user.get(m).getValue())<min)
                 {
