@@ -226,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
+                        for(int i=0;i<3;i++)
+                            aux[i] = new ArrayList<positionDetails>();
+
                         for(DataSnapshot dbSnap: dataSnapshot.getChildren()){
 
                             data_download = new positionDetails();
@@ -239,13 +242,18 @@ public class MainActivity extends AppCompatActivity {
                             data_download.setList((List)h.get("list"));
                             Log.d("data",h.get("list").getClass()+"");
                             //List<Map.Entry<String,Double>> lis = new ArrayList<Map.Entry<String, Double>>();
-                            Log.d("data",data_download.getList().get(0)+"   ");
+                            HashMap temph = (HashMap)data_download.getList().get(0);
+                            Log.d("res_data",temph.get("key")+"   ");
 
                             //data_download.setX(dbSnap.getValue().get("x"));
                             //Log.d("data_download",data_download.getX()+" : "+data_download.getY()+" ");
                             aux[0].add(data_download);
 
                         }
+                        //Log.d("res_data",(HashMap)aux[0].get(0).getList().get(0).get+"");
+                        positionDetails res= calculateProximity(WifiStrength());
+                        Log.d("res",res.getX()+" : "+res.getY());
+                        Toast.makeText(MainActivity.this,res.getX()+" : "+res.getY(),Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -408,15 +416,17 @@ public class MainActivity extends AppCompatActivity {
         upload_ref.child(PosID).setValue(pos);
     }
 
-    public static positionDetails calculateProximity(ArrayList<Map.Entry<String,Double>>user){
+    public static positionDetails calculateProximity(List<Map.Entry<String,Double>>user){
 
+        HashMap temph;
         positionDetails res = new positionDetails();
-        int i=0;
+        int i;
         for(i=0;i<aux.length;i++){
             int len = aux[0].size();
             if(len>0){
                 for(int j=0;j<len;j++){
-                    if(aux[i].get(j).getList().get(j).getKey() == user.get(i).getKey())
+                    temph = (HashMap)aux[i].get(j).getList().get(j);
+                    if(temph.get("key").equals(user.get(i).getKey()))
                         aux[i+1].add(aux[i].get(j));
                 }
             }
@@ -446,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    public static int getClosestElem(ArrayList<positionDetails> aux, ArrayList<Map.Entry<String,Double>> user, int i){
+    public static int getClosestElem(ArrayList<positionDetails> aux, List<Map.Entry<String,Double>> user, int i){
         int m,n,minIndex;
         double min;
         min = aux.get(0).getList().get(0).getValue();
