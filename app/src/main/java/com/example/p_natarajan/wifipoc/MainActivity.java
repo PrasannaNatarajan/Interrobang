@@ -257,11 +257,22 @@ public class MainActivity extends AppCompatActivity {
                             logString+=aux[0].toString()+"\n";
                         }
                         //Log.d("res_data",(HashMap)aux[0].get(0).getList().get(0).get+"");
-                        positionDetails res= calculateProximity(WifiStrength());
-                        logString+="Calculated x,y = " + res.getX() + "," + res.getY() + "\n";
-                        Log.d("res",res.getX()+" : "+res.getY());
+                        positionDetails res[] = new positionDetails[5];
+                        String lists[] = new String[5];
+
+                        for(int x=0;x<5;x++)
+                        {
+                            res[x] = calculateProximity(WifiStrength());
+                            lists[x] = "";
+                            for(int y=0;y<5;y++)
+                                lists[x] += res[x].getList().get(y).getValue();
+                        }
+                        int modeVar = mode(lists);
+
+                        logString+="Calculated x,y = " + res[modeVar].getX() + "," + res[modeVar].getY() + "\n";
+                        Log.d("res",res[modeVar].getX()+" : "+res[modeVar].getY());
                         Log.d("Toast Text",toastText);
-                        Toast.makeText(MainActivity.this,res.getX()+" : "+res.getY() + "\n" + toastText,Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,res[modeVar].getX()+" : "+res[modeVar].getY() + "\n" + toastText,Toast.LENGTH_LONG).show();
                         toastText="";
                     }
 
@@ -274,22 +285,50 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                double X = Double.parseDouble(XEdit.getText().toString().trim());
-                double Y = Double.parseDouble(YEdit.getText().toString().trim());
-                List<Map.Entry<String, Double>> list = WifiStrength();
+                final int FIVE = 5;
+                double X[] = new double[FIVE];
+                double Y[] = new double[FIVE];
+                positionDetails pos[] = new positionDetails[FIVE];
+                String PosID[] = new String[FIVE];
+                String modeVar[] = new String[FIVE];
 
-                String PosID = upload_ref.push().getKey();
+                ArrayList<List<Map.Entry<String, Double>>> list = new ArrayList<List<Map.Entry<String,Double>>>();
+                for(int i=0;i<FIVE;i++) {
+                    X[i] = Double.parseDouble(XEdit.getText().toString().trim());
+                    Y[i] = Double.parseDouble(YEdit.getText().toString().trim());
+                    list.add(WifiStrength());
+                    PosID[i] = upload_ref.push().getKey();
+                    pos[i] = new positionDetails(X[i], Y[i], "", list.get(i));
+                    modeVar[i]="";
+                    for(int j=0;j<FIVE; j++)
+                        modeVar[i] += list.get(i).get(j).getKey();
+                }
+                int modeResult = mode(modeVar);
 
-                positionDetails pos = new positionDetails(X,Y,"",list);
-                insertNewPosition(PosID,pos);
+                insertNewPosition(PosID[modeResult],pos[modeResult]);
             }
         });
 
+    }
+    public static int mode(String a[]) {
+        int maxCount=-1;
+        int maxIndex=-1;
+
+        for (int i = 0; i < a.length; ++i) {
+            int count = 0;
+            for (int j = 0; j < a.length; ++j) {
+                if (a[j].equals(a[i])) ++count;
+            }
+            if (count > maxCount) {
+                maxCount = count;
+                maxIndex = i;
+            }
+        }
+        return maxIndex;
     }
 
     @Override
@@ -507,7 +546,4 @@ public class MainActivity extends AppCompatActivity {
 
         return minIndex;
     }
-
-
-
 }
