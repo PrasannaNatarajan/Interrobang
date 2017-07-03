@@ -46,7 +46,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private static final long RIPPLE_DURATION = 250;
-    private static final int PRIORITY_LIST_LEN = 3;
+    private static final int PRIORITY_LIST_LEN = 5;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     String logString = new String();
 
-    public static ArrayList<positionDetails> aux[]= new ArrayList[4];   // Priority list length = 3
+    public static ArrayList<positionDetails> aux[]= new ArrayList[PRIORITY_LIST_LEN+1];   // Priority list length = 3
 
     //public static positionDetails[][] auxilary = new positionDetails[5][4];
     public static positionDetails data_download = new positionDetails();
@@ -126,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference("routers");
         upload_ref = FirebaseDatabase.getInstance().getReference("new");
 
-        mPositions = new double[3][3];
-        distances = new double[3];
+        //mPositions = new double[3][3];
+        //distances = new double[3];
 
 
         wifiDetails = new HashMap<>();
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d("dbSnap",dataSnapshot.toString());
                         logString+="onDataChange\n";
-                        for(int i=0;i<=3;i++)
+                        for(int i=0;i<=PRIORITY_LIST_LEN;i++)
                             aux[i] = new ArrayList<positionDetails>();
 
                         for(DataSnapshot dbSnap: dataSnapshot.getChildren()){
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("data",""+dbSnap.getValue().getClass()+ "  "+ dbSnap.getValue());
                             Log.d("data",""+h.get("x").getClass()+" : "+h.get("y").getClass());
 
-                            data_download.setX((double)(Long)h.get("x"));
+                            data_download.setX(Double.parseDouble(""+h.get("x")));
                             data_download.setY(Double.parseDouble(h.get("y")+""));
                             data_download.setZ("");
                             data_download.setList((List)h.get("list"));
@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                         positionDetails res= calculateProximity(WifiStrength());
                         logString+="Calculated x,y = " + res.getX() + "," + res.getY() + "\n";
                         Log.d("res",res.getX()+" : "+res.getY());
+                        Log.d("Toast Text",toastText);
                         Toast.makeText(MainActivity.this,res.getX()+" : "+res.getY() + "\n" + toastText,Toast.LENGTH_LONG).show();
                         toastText="";
                     }
@@ -368,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("pras", "" + (scans == null));
                 Log.d("pras", "" + scans.isEmpty());
 
-                int topThree = 3;
+                //int topThree = 3;
                 if (scans != null && !scans.isEmpty()) {
                     int i=0;
                     for (ScanResult scan : scans) {
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
                 return (o2.getValue()).compareTo( o1.getValue() );
             }
         } );
-        for(int tt = 0; tt<3; tt++)
+        for(int tt = 0; tt<5; tt++)
             toastText+= list.get(tt).getKey()+ " : " + list.get(tt).getValue()   + "\n";
         for(Map.Entry<String, Double> entry:list){
             Log.d("Pras",entry.getKey()+" ==== "+entry.getValue());
@@ -437,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("ERROR001","aux.length = " + aux.length);
         for(i=0;i<aux.length-1;i++){
             int len = aux[i].size();
+            Log.d("ERROR001","aux["+i+"].size() = " + aux[i].size());
             if(len>0){
                 for(int j=0;j<len;j++){
 
@@ -444,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
                     if(temph.get("key").equals(user.get(i).getKey()))
                         // for priority k, i=k and check if the kth element in the list is same as user's kth element
                     {
+                        Log.d("temph.get(key)","i = "+i+" j = "+j+" "+user.get(i).getKey());
                         aux[i + 1].add(aux[i].get(j));
                     }
                 }
@@ -457,16 +460,18 @@ public class MainActivity extends AppCompatActivity {
 
         if(aux[i].size() == 1)
         {
-            Log.d("print",""+aux[i-1].get(0).getX()+":"+aux[i-1].get(0).getY());
+            Log.d("if print","inside if");
+            Log.d("if print",""+aux[i-1].get(0).getX()+":"+aux[i-1].get(0).getY());
             res.setX(aux[i-1].get(0).getX());
             res.setY(aux[i-1].get(0).getY());
             res.setZ("");
             res.setList(user);
         }
         else {
+            Log.d("else print","inside else");
 
             int closest_elem = getClosestElem(aux[i], user);
-            Log.d("print", aux[i].get(closest_elem).getX() + " : " + aux[i].get(closest_elem).getY());
+            Log.d("else print", aux[i].get(closest_elem).getX() + " : " + aux[i].get(closest_elem).getY());
             res.setX(aux[i].get(closest_elem).getX());
             res.setY(aux[i].get(closest_elem).getY());
             res.setZ("");
@@ -482,7 +487,7 @@ public class MainActivity extends AppCompatActivity {
         double min;
         toastText+="Extended comparison ENABLED\n";
         HashMap temph = (HashMap)aux.get(0).getList().get(0);
-        min = Double.parseDouble(temph.get("value")+"");
+        min = Math.abs(Double.parseDouble(temph.get("value")+""));
         minIndex = 0;
 
         for(n=0;n<aux.size();n++)
